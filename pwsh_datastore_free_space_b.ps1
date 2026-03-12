@@ -110,9 +110,10 @@ $getStopDateTimeValue = (Get-Date).ToString("dd-MM-yyyy HH:mm:ss.fff") # Script'
 [string]$tmp_info_desc_start = "Operation_Start_Time : " + $getStartDateTimeValue + "."
 [string]$tmp_info_desc_stop = "Operation_Stop_Time : " + $getStopDateTimeValue + "."
 $subjectText = "INFO. Powershell VMware Datastores Utilization Analyzer. Operation Status."
-$messageText = "Datastores Utitization Analysis successfully completed." + [Environment]::NewLine + "See attachment..." + `
+$messageText = "Datastores Utilization Analysis successfully completed." + [Environment]::NewLine + "See attachment..." + `
 [Environment]::NewLine + "---" + [Environment]::NewLine + $tmp_info_desc_start + [Environment]::NewLine + $tmp_info_desc_stop + `
 [Environment]::NewLine + [Environment]::NewLine + "---" + [Environment]::NewLine + "Powershell VMware Datastores Utilization Analyzer Beta 1.0." + `
 [Environment]::NewLine + "Email to : [email_address]"
 EmailSender_Func -emailMessageSubject $subjectText -emailMessageContent $messageText -emailMessageAttach $attXlsxFile
+
 
