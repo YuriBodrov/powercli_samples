@@ -5,7 +5,7 @@
  Version                              :       Pre-Release 1.1
  Author                               :        Yuri P. Bodrov         
  Company                              :   PLC Alfastrahovanie             
- E-mail                               : bodrovyp@alfastrah.ru   
+ E-mail                               :  bodrovyp@hotmail.com   
  Phone №                              :          +79259929596
  Telegram_ID                          :           @YuriBodrov           
 ###############################################################>
@@ -30,17 +30,15 @@ param ([Parameter(Mandatory=$true, Position=0)][string]$Arg)
 # String Variables 
 [string]$logFilePath = "$PSScriptRoot\cmdb-sync-log-file.log"
 [string]$logFilePathCsv = "$PSScriptRoot\cmdb-sync-log-file.csv"
-[string]$vcAddress = "vmc-01-new.vesta.ru"
-[string]$cmdbAddress = "10.213.20.29"
-[string]$smtpServer = "relay.alfastrah.ru"
-[string]$emailSender = "vmware_automation@alfastrah.ru"
-#[string]$emailAddr_01 = "oksenuk@alfastrah.ru"
-#[string]$emailAddr_02 = "bodrovyp@alfastrah.ru"
+[string]$vcAddress = "[vcsa_address]"
+[string]$cmdbAddress = "[cmdb_json_api_address]"
+[string]$smtpServer = "[mail_server_addr]"
+[string]$emailSender = "[email_sender]"
 [string]$pwshServerIpAddr = (Get-NetIPAddress -InterfaceIndex 8).IPAddress
 [string]$pwshServerFqdn = (Resolve-DnsName -Name $pwshServerIpAddr).NameHost
 
 # Array Lists 
-$emailAddr_List = "bodrovyp@alfastrah.ru", "oksenuk@alfastrah.ru", "SolovevSV1@alfastrah.ru"
+$emailAddr_List = "[email_addr_01]", "[email_addr_02]", "[email_addr_03]"
 $vmNamesArray = [System.Collections.ArrayList]::new()    # Gets 'VM Name' Values from JSON!
 $itServicesArray = [System.Collections.ArrayList]::new() # Gets 'IT Service' Values from JSON!
 $envTypeArray = [System.Collections.ArrayList]::new()    # Gets 'EnvironmentType' Values from JSON!
@@ -145,22 +143,14 @@ Function AppendToLogFile_Func
 Function EmailSender_Func
 {
   # Use these Global Vars
-  # [string]$smtpServer = "relay.alfastrah.ru"
-  # [string]$emailSender = "vmware_automation@alfastrah.ru"
-  # [string]$emailAddr_01 = "oksenuk@alfastrah.ru"
-  # [string]$emailAddr_02 = "bodrovyp@alfastrah.ru"
+  # [string]$smtpServer
+  # [string]$emailSender
+  # $emailAddr_List
   
   param (
     [Parameter(Mandatory)][string]$emailMessageContent,
     [Parameter(Mandatory)][string]$emailMessageSubject
   )
-  
-  <#
-  $emailMessageContent = "Hello, Yuri!" + [Environment]::NewLine + "This is a Test Message. Do not reply on it. Have a Nice Day! :-)" + 
-  #[Environment]::NewLine + "`n" + "---" + [Environment]::NewLine + "Powershell Multitool. osis@alfastrah.ru"
-  [Environment]::NewLine + [Environment]::NewLine + "---" + [Environment]::NewLine + "Powershell CMDB Sync MultiTool" + 
-  [Environment]::NewLine + "Email to : osis@alfastrah.ru"
-  #>
   
   Send-MailMessage -To $emailAddr_List -From $emailSender -Subject $emailMessageSubject -Body $emailMessageContent -SmtpServer $smtpServer
   
@@ -174,8 +164,8 @@ Function GetAllJsonInfo_Func
 {   
   Try
   {
-    $json_cmdb_doc_url = "http://" + $cmdbAddress + "/as_itil_cmdb_conf/hs/api/getListVM" # TODO! This Function Must Run with Try..Catch..Finally! 
-    $cmdbCreds = Get-VICredentialStoreItem -Host 1C
+    $json_cmdb_doc_url = "http://" + $cmdbAddress + "[url_to_json_file_fragment]" # TODO! This Function Must Run with Try..Catch..Finally! 
+    $cmdbCreds = Get-VICredentialStoreItem -Host [cmdb_host_addr]
     $cmdbAuth = [System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($cmdbCreds.User+':'+$cmdbCreds.Password))
     $cmdbAuthHeaders = @{Authorization = "Basic $cmdbAuth"}
     $spec_symbols = "?","<>","null","<?>"
@@ -237,7 +227,7 @@ Function GetAllJsonInfo_Func
     $subjectText = "ERROR! Powershell MultiTool Software. Unable to Get CMDB JSON File!"
     $messageText = "ERROR!" + [Environment]::NewLine + $tmp_err_desc + [Environment]::NewLine + [Environment]::NewLine + "---" + 
     [Environment]::NewLine + "Powershell MultiTool Software 1.0" + [Environment]::NewLine + "Server Address : " + $pwshServerFqdn + `
-    "[" + $pwshServerIpAddr + "]." + [Environment]::NewLine + "Log File Path : " + $logFilePath + "." + [Environment]::NewLine + "Email to : osis@alfastrah.ru"
+    "[" + $pwshServerIpAddr + "]." + [Environment]::NewLine + "Log File Path : " + $logFilePath + "." + [Environment]::NewLine + "Email to : [email_address]"
     EmailSender_Func -emailMessageSubject $subjectText -emailMessageContent $messageText
 
     Start-Sleep -Milliseconds 2000
@@ -384,7 +374,7 @@ Function AppendJsonInfoToVc_Func
     $subjectText = "ERROR! Powershell MultiTool Software. Unable to Connect to vCenter Server " + $vcAddress +"!"
     $messageText = "ERROR!" + [Environment]::NewLine + $tmp_err_desc + [Environment]::NewLine + [Environment]::NewLine + "---" + 
     [Environment]::NewLine + "Powershell MultiTool Software 1.0" + [Environment]::NewLine + "Server Address : " + $pwshServerFqdn + `
-    "[" + $pwshServerIpAddr + "]." + [Environment]::NewLine + "Log File Path : " + $logFilePath + "." + [Environment]::NewLine + "Email to : osis@alfastrah.ru"
+    "[" + $pwshServerIpAddr + "]." + [Environment]::NewLine + "Log File Path : " + $logFilePath + "." + [Environment]::NewLine + "Email to : [email_addr]"
     EmailSender_Func -emailMessageSubject $subjectText -emailMessageContent $messageText
     
     Disconnect-VIServer $vcAddress -Confirm:$false
@@ -432,7 +422,7 @@ If ($Arg -eq "sync") # CMDB Synchronization Starts Here
   $messageText = "CMDB Data Synchronization successfully completed!" + [Environment]::NewLine + "---" + [Environment]::NewLine + `
   $tmp_info_desc_start + [Environment]::NewLine + $tmp_info_desc_stop + [Environment]::NewLine + [Environment]::NewLine + "---" + `
   [Environment]::NewLine + "Powershell MultiTool Software 1.0" + [Environment]::NewLine + "Server Address : " + $pwshServerFqdn + `
-  "[" + $pwshServerIpAddr + "]." + [Environment]::NewLine + "Log File Path : " + $logFilePath + "." + [Environment]::NewLine + "Email to : osis@alfastrah.ru"
+  "[" + $pwshServerIpAddr + "]." + [Environment]::NewLine + "Log File Path : " + $logFilePath + "." + [Environment]::NewLine + "Email to : [email_addr]"
   EmailSender_Func -emailMessageSubject $subjectText -emailMessageContent $messageText
 
 }
@@ -452,3 +442,4 @@ Else
   #Write-Host ("Goodbye!") -ForegroundColor Magenta
   Exit
 }
+
