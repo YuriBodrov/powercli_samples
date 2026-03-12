@@ -4,7 +4,7 @@
  Version                              :              Beta 1.0
  Author                               :        Yuri P. Bodrov         
  Company                              :   PLC Alfastrahovanie             
- E-mail                               : bodrovyp@alfastrah.ru   
+ E-mail                               :  bodrovyp@hotmail.com   
  Phone №                              :          +79259929596
  Telegram_ID                          :           @YuriBodrov           
 ############################################################>
@@ -14,11 +14,10 @@ Clear-Host
 $getStartDateTimeValue = (Get-Date).ToString("dd-MM-yyyy HH:mm:ss.fff") # Script's Start Datetime
 
 # Global Variables 
-[string]$vcAddress = "vmc-01-new.vesta.ru"
-[string]$smtpServer = "relay.alfastrah.ru"
-[string]$emailSender = "vmware_automation@alfastrah.ru"
-$emailAddr_List = "bodrovyp@alfastrah.ru", "oksenuk@alfastrah.ru", "SolovevSV1@alfastrah.ru"
-#$emailAddr_List = "bodrovyp@alfastrah.ru"
+[string]$vcAddress = "[vcsa_addr]"
+[string]$smtpServer = "[smtp_server_addr]"
+[string]$emailSender = "[email_sender_addr]"
+$emailAddr_List = "[email_receip_addr_01]", "email_receip_addr_02", "email_receip_addr_03"
 [string]$pwshServerIpAddr = (Get-NetIPAddress -InterfaceIndex 8).IPAddress
 [string]$pwshServerFqdn = (Resolve-DnsName -Name $pwshServerIpAddr).NameHost
 
@@ -99,7 +98,7 @@ ForEach ($datastoreName in $datastoreList)
 	$datastoreCapTable.Rows.Add($dataRow)
 }
 
-$attXlsxFile = "C:\Scripts_Output\datastore_free_space_$(Get-Date -Format "dd-MM-yyyy_HH-mm-ss_fff").xlsx"
+$attXlsxFile = "[path_to_directory]_$(Get-Date -Format "dd-MM-yyyy_HH-mm-ss_fff").xlsx"
 $datastoreCapTable | Select * -ExcludeProperty RowError, RowState, Table, ItemArray, HasErrors | sort Datastore_Util_In_Prcnts -Descending | 
 Export-Excel $attXlsxFile -AutoSize -FreezeTopRow -TableStyle Medium11 -WorksheetName "Datastores_Capacity_Report"
 
@@ -114,5 +113,6 @@ $subjectText = "INFO. Powershell VMware Datastores Utilization Analyzer. Operati
 $messageText = "Datastores Utitization Analysis successfully completed." + [Environment]::NewLine + "See attachment..." + `
 [Environment]::NewLine + "---" + [Environment]::NewLine + $tmp_info_desc_start + [Environment]::NewLine + $tmp_info_desc_stop + `
 [Environment]::NewLine + [Environment]::NewLine + "---" + [Environment]::NewLine + "Powershell VMware Datastores Utilization Analyzer Beta 1.0." + `
-[Environment]::NewLine + "Email to : osis@alfastrah.ru"
+[Environment]::NewLine + "Email to : [email_address]"
 EmailSender_Func -emailMessageSubject $subjectText -emailMessageContent $messageText -emailMessageAttach $attXlsxFile
+
