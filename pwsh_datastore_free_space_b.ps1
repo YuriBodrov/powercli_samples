@@ -99,7 +99,7 @@ ForEach ($datastoreName in $datastoreList)
 }
 
 $attXlsxFile = "[path_to_directory]_$(Get-Date -Format "dd-MM-yyyy_HH-mm-ss_fff").xlsx"
-$datastoreCapTable | Select * -ExcludeProperty RowError, RowState, Table, ItemArray, HasErrors | sort Datastore_Util_In_Prcnts -Descending | 
+$datastoreCapTable | Select * -ExcludeProperty RowError, RowState, Table, ItemArray, HasErrors | sort Datastore_Util_In_Prcnts -Descending | `
 Export-Excel $attXlsxFile -AutoSize -FreezeTopRow -TableStyle Medium11 -WorksheetName "Datastores_Capacity_Report"
 
 Disconnect-VIServer $vcAddress -Confirm:$false
