@@ -31,7 +31,7 @@ $datastoreCapTable.Columns.Add((New-Object system.Data.DataColumn Datastore_Util
 
 Function EmailSender_Func
 {
-  # Use these Global Vars
+  # Uses these Global Vars:
   # [string]$smtpServer
   # [string]$emailSender
   # $emailAddr_List
