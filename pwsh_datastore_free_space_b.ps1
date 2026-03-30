@@ -4,7 +4,7 @@
  Version                              :              Beta 1.0
  Author                               :        Yuri P. Bodrov         
  Company                              :   PLC Alfastrahovanie             
- E-mail                               :  bodrovyp@hotmail.com   
+ E-mail                               : bodrovyp@alfastrah.ru   
  Phone №                              :          +79259929596
  Telegram_ID                          :           @YuriBodrov           
 ############################################################>
@@ -14,12 +14,12 @@ Clear-Host
 $getStartDateTimeValue = (Get-Date).ToString("dd-MM-yyyy HH:mm:ss.fff") # Script's Start Datetime
 
 # Global Variables 
-[string]$vcAddress = "[vcsa_addr]"
-[string]$smtpServer = "[smtp_server_addr]"
-[string]$emailSender = "[email_sender_addr]"
-$emailAddr_List = "[email_receip_addr_01]", "email_receip_addr_02", "email_receip_addr_03"
-[string]$pwshServerIpAddr = (Get-NetIPAddress -InterfaceIndex 8).IPAddress
-[string]$pwshServerFqdn = (Resolve-DnsName -Name $pwshServerIpAddr).NameHost
+[string]$vcAddress        = "vmc-01-new.vesta.ru"
+[string]$smtpServer       = "relay.alfastrah.ru"
+[string]$emailSender      = "vmware_automation@alfastrah.ru"
+$emailAddr_List           = "bodrovyp@alfastrah.ru", "oksenuk@alfastrah.ru", "SolovevSV1@alfastrah.ru"
+#[string]$pwshServerIpAddr = (Get-NetIPAddress -InterfaceIndex 8).IPAddress
+#[string]$pwshServerFqdn   = (Resolve-DnsName -Name $pwshServerIpAddr).NameHost
 
 # Output Table Class Initialization 
 $datastoreCapTable = New-Object system.Data.DataTable “Datastores_Capacity_Report”                       # XLSX 1st DataSheet's Name
@@ -31,7 +31,7 @@ $datastoreCapTable.Columns.Add((New-Object system.Data.DataColumn Datastore_Util
 
 Function EmailSender_Func
 {
-  # Uses these Global Vars:
+  # Uses these Global Vars
   # [string]$smtpServer
   # [string]$emailSender
   # $emailAddr_List
@@ -54,20 +54,22 @@ Connect-VIServer $vcAddress -User $viCreds.User -Password $viCreds.Password -Err
 
 # Get All Required Parameter Values from Datastore VI (Virtual Infrastructure) Objects
 $datastoreList = Get-Datastore | Sort-Object Name # Sort this List by Datastore's Name
+
 ForEach ($datastoreName in $datastoreList)
 {
-	$datastoreName_Cap = [math]::Round($datastoreName.CapacityGB ,2)
-	$datastoreName_FreeCap = [math]::Round($datastoreName.FreeSpaceGB ,2)
+	$datastoreName_Cap            = [math]::Round($datastoreName.CapacityGB ,2)
+	$datastoreName_FreeCap        = [math]::Round($datastoreName.FreeSpaceGB ,2)
 	$datastoreName_Util_In_Prcnts = [math]::Round((($datastoreName.CapacityGB - $datastoreName.FreeSpaceGB) / $datastoreName.CapacityGB) * 100, 2)
 	Write-Host ("Datastore_Name            : " + $datastoreName.Name)           # Datastore's Name
 	Write-Host ("Datastore_Capacity_GB     : " + $datastoreName_Cap)            # Total Datastore's Capacity in GBs
 	Write-Host ("Datastore_FreeCapacity_GB : " + $datastoreName_FreeCap)        # Free Datastore's Capacity in GBs
 	Write-Host ("Utilization_In_%          : " + $datastoreName_Util_In_Prcnts) # Used Datastore's Capacity in %
 
-	# Check : 
+	# Check : -------------------------------------
 	# IF '80% <= Utilization_In_% < 90%' -> Warning 
 	# IF 'Utilization_In_% >= 90%'       -> Error 
 	[string]$datastoreName_Util_State = ""
+	
 	If (($datastoreName_Util_In_Prcnts -ge 80) -and ($datastoreName_Util_In_Prcnts -lt 90))
 	{
 		$datastoreName_Util_State = "Warning"
@@ -86,20 +88,20 @@ ForEach ($datastoreName in $datastoreList)
 		Write-Host ("State                     : " + $datastoreName_Util_State)   # Datastore's Utilization State = Normal
 	}
 
-	$dataRow = $datastoreCapTable.NewRow()
-	$dataRow.Datastore_Name = $datastoreName.Name
-	$dataRow.Datastore_TotalCap_GBs = $datastoreName_Cap
-	$dataRow.Datastore_FreeCap_GBs = $datastoreName_FreeCap
+	$dataRow                          = $datastoreCapTable.NewRow()
+	$dataRow.Datastore_Name           = $datastoreName.Name
+	$dataRow.Datastore_TotalCap_GBs   = $datastoreName_Cap
+	$dataRow.Datastore_FreeCap_GBs    = $datastoreName_FreeCap
 	$dataRow.Datastore_Util_In_Prcnts = $datastoreName_Util_In_Prcnts
-	$dataRow.Datastore_Util_State = $datastoreName_Util_State
+	$dataRow.Datastore_Util_State     = $datastoreName_Util_State
 
 	Write-Host ("---")
 
 	$datastoreCapTable.Rows.Add($dataRow)
 }
 
-$attXlsxFile = "[path_to_directory]_$(Get-Date -Format "dd-MM-yyyy_HH-mm-ss_fff").xlsx"
-$datastoreCapTable | Select * -ExcludeProperty RowError, RowState, Table, ItemArray, HasErrors | sort Datastore_Util_In_Prcnts -Descending | `
+$attXlsxFile = "C:\Scripts_Output\datastore_free_space_$(Get-Date -Format "dd-MM-yyyy_HH-mm-ss_fff").xlsx"
+$datastoreCapTable | Select-Object * -ExcludeProperty RowError, RowState, Table, ItemArray, HasErrors | Sort-Object Datastore_Util_In_Prcnts -Descending | `
 Export-Excel $attXlsxFile -AutoSize -FreezeTopRow -TableStyle Medium11 -WorksheetName "Datastores_Capacity_Report"
 
 Disconnect-VIServer $vcAddress -Confirm:$false
@@ -108,12 +110,10 @@ $getStopDateTimeValue = (Get-Date).ToString("dd-MM-yyyy HH:mm:ss.fff") # Script'
 
 # Send an Email Information Message
 [string]$tmp_info_desc_start = "Operation_Start_Time : " + $getStartDateTimeValue + "."
-[string]$tmp_info_desc_stop = "Operation_Stop_Time : " + $getStopDateTimeValue + "."
-$subjectText = "INFO. Powershell VMware Datastores Utilization Analyzer. Operation Status."
-$messageText = "Datastores Utilization Analysis successfully completed." + [Environment]::NewLine + "See attachment..." + `
+[string]$tmp_info_desc_stop  = "Operation_Stop_Time : " + $getStopDateTimeValue + "."
+$subjectText                 = "INFO. Powershell VMware Datastores Utilization Analyzer. Operation Status."
+$messageText                 = "Datastores Utilization Analysis successfully completed." + [Environment]::NewLine + "See attachment..." + `
 [Environment]::NewLine + "---" + [Environment]::NewLine + $tmp_info_desc_start + [Environment]::NewLine + $tmp_info_desc_stop + `
 [Environment]::NewLine + [Environment]::NewLine + "---" + [Environment]::NewLine + "Powershell VMware Datastores Utilization Analyzer Beta 1.0." + `
-[Environment]::NewLine + "Email to : [email_address]"
+[Environment]::NewLine + "Email to : osis@alfastrah.ru"
 EmailSender_Func -emailMessageSubject $subjectText -emailMessageContent $messageText -emailMessageAttach $attXlsxFile
-
-
