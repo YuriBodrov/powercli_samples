@@ -186,6 +186,7 @@ Function FinalizeMcVmStat ### Function 'FinalizeMcVmStat' Starts Here...
   $resultDataSet.Tables.Add($resultDsTable)
   
   # Export 'resultDataSet' DataTable to MS Excel File
+  # $PSScriptRoot - Directory where this Script is located
   $resultDsTable | Select-Object * -ExcludeProperty RowError, RowState, Table, ItemArray, HasErrors | Sort-Object vmname -Descending | `
   Export-Excel -Path "$PSScriptRoot\mc_vms_to_ds_tmp.xlsx" -WorksheetName "mc_vms_to_ds" -AutoSize -TableStyle Medium11
 
