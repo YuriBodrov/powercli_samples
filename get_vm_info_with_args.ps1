@@ -96,8 +96,8 @@ else
           if ($vm.Name -match $vmToSearch)
           {
             $coresPerSocket = $vm.Config.Hardware.NumCoresPerSocket
-            $vcpuSockets = $vm.Config.Hardware.NumCPU / $coresPerSocket
-            $memInGB = $vm.Config.Hardware.MemoryMB / 1024
+            $vcpuSockets    = $vm.Config.Hardware.NumCPU / $coresPerSocket
+            $memInGB        = $vm.Config.Hardware.MemoryMB / 1024
 
             Write-Host ("vCPU Sockets in " + $vm.Name + "          : " + $vcpuSockets)
             Write-Host ("Cores per vCPU Socket in " + $vm.Name + " : " +$coresPerSocket)
@@ -113,9 +113,9 @@ else
                 Write-Host ("===========================================")
 
                 #Write-Host ("Datastore Name: " + ($dev.Backing.Datastore).Value)
-                Write-Host ("Datastore Name: " + ($dev.Backing.FileName).Split("]")[0].TrimStart("["))
-                Write-Host ("Path to VMDK: " + $dev.Backing.FileName)
-                Write-Host ("Disk volume size (GB): " + ($dev.CapacityInKB)/1048576)
+                Write-Host ("Datastore Name        : " + ($dev.Backing.FileName).Split("]")[0].TrimStart("["))
+                Write-Host ("Path to VMDK          : " + $dev.Backing.FileName)
+                Write-Host ("Disk volume size (GB) : " + ($dev.CapacityInKB)/1048576)
               }
             }
 
