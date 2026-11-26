@@ -2,9 +2,8 @@
  POWERCLI : VMWARE DATASTORE FREE SPACE ANALYZER AND REPORTER
  ============================================================
  Version                              :              Beta 1.0
- Author                               :        Yuri P. Bodrov         
- Company                              :   PLC Alfastrahovanie             
- E-mail                               : bodrovyp@alfastrah.ru   
+ Author                               :        Yuri P. Bodrov                      
+ E-mail                               :  bodrovyp@hotmail.com   
  Phone №                              :          +79259929596
  Telegram_ID                          :           @YuriBodrov           
 ############################################################>
