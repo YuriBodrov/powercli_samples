@@ -26,13 +26,13 @@ $hbaList = $esxcli.Storage.san.fc.list.Invoke()
     }
 ################################################>
 
-$vcsaAddress = "vmc-01-new.vesta.ru"
+$vcsaAddress = "[vcsa_addr]"
 
 $credentialsForAll = Get-Credential -UserName "administrator@vsphere.local"
 Connect-VIServer -Server $vcsaAddress -Credential $credentialsForAll
 
 #$vmhost = "vmware26.vesta.ru"
-$vmhost      = "vmware139-sap.vesta.ru"
+$vmhost      = "[esxi_addr]"
 $esxcli_info = Get-EsxCli -VMHost $vmhost -V2
 
 $esxi_nics = $esxcli_info.network.nic.list.Invoke()    # Get ESXi NICs Information
