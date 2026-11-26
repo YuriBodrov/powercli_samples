@@ -2,12 +2,11 @@
  POWERSHELL MULTITOOL : CMDB SYNCHRONIZER + VM/CLUSTER MAPPER
  ITIL_CMDB Attributes -> vCenter Server Synchronization Program
  ==============================================================
- Version                              :       Pre-Release 1.1
- Author                               :        Yuri P. Bodrov         
- Company                              :   PLC Alfastrahovanie             
- E-mail                               :  bodrovyp@hotmail.com   
- Phone №                              :          +79259929596
- Telegram_ID                          :           @YuriBodrov           
+ Version                              :         Pre-Release 1.1
+ Author                               :          Yuri P. Bodrov                      
+ E-mail                               :    bodrovyp@hotmail.com   
+ Phone №                              :            +79259929596
+ Telegram_ID                          :             @YuriBodrov           
 ###############################################################>
 
 <# TODO! 
