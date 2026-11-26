@@ -28,10 +28,10 @@ $hbaList = $esxcli.Storage.san.fc.list.Invoke()
 
 $vcsaAddress = "[vcsa_addr]"
 
-$credentialsForAll = Get-Credential -UserName "administrator@vsphere.local"
+$credentialsForAll = Get-Credential -UserName "[vcsa_user_login]"
 Connect-VIServer -Server $vcsaAddress -Credential $credentialsForAll
 
-#$vmhost = "vmware26.vesta.ru"
+#$vmhost = "[esxi_addr]"
 $vmhost      = "[esxi_addr]"
 $esxcli_info = Get-EsxCli -VMHost $vmhost -V2
 
