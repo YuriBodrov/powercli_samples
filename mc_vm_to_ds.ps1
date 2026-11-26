@@ -2,9 +2,8 @@
  POWERCLI :     MC (Mission Critical) VM to Datastore Mapping
  ============================================================
  Version                              :           Release 1.0
- Author                               :        Yuri P. Bodrov         
- Company                              :   PLC Alfastrahovanie             
- E-mail                               : bodrovyp@alfastrah.ru   
+ Author                               :        Yuri P. Bodrov                      
+ E-mail                               :  bodrovyp@hotmail.com   
  Phone №                              :          +79259929596
  Telegram_ID                          :           @YuriBodrov           
 ############################################################>
